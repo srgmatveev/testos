@@ -1,26 +1,37 @@
-.set MAGIC, 0x1badb002
-.set FLAGS, (1<<0 | 1<<1)
-.set CHECKSUM, -(MAGIC + FLAGS)
+/* Declare constants for the multiboot header. */
+.set ALIGN,    1<<0             /* align loaded modules on page boundaries */
+.set MEMINFO,  1<<1             /* provide memory map */
+.set FLAGS,    ALIGN | MEMINFO  /* this is the Multiboot 'flag' field */
+.set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
+.set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
+
 .section multiboot
+    .align 4
     .long MAGIC
     .long FLAGS
     .long CHECKSUM
+
+.section .bss
+    .align 16
+    kernel_stack_bottom:
+        .skip 2*1024*1024 # 2 MiB
+    kernel_stack_top:
+
 .section .text
 .extern kernelMain
 .extern initializeConstructors
-    .global loader
-loader:
-    mov $kernel_stack, %esp
+.global _start
+.type _start, @function
+_start:
+    mov $kernel_stack_top, %esp
     push %eax # magic number
     push %ebx # multiboot structure ref
     call initializeConstructors
     call kernelMain
 
-_stop:
     cli
+.hang:
     hlt
-    jmp _stop
+    jmp .hang
 
-.section .bss
-.space 2*1024*1024 #2Mib
-kernel_stack:
+.size _start, . - _start

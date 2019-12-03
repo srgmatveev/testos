@@ -1,5 +1,5 @@
-OPTIMIZATION = 0
-GPP_PARAMS = -m32 -O$(OPTIMIZATION) -std=c++14 -fno-use-cxa-atexit -fno-builtin -fno-rtti -fno-leading-underscore -Wall -Wextra -pedantic-errors
+OPTIMIZATION = 2
+GPP_PARAMS = -m32 -O$(OPTIMIZATION) -std=c++14 -fno-use-cxa-atexit -fno-builtin -fno-leading-underscore -ffreestanding -O2 -fno-exceptions -fno-rtti -Wall -Wextra -pedantic-errors
 AS_PARAMS = --32
 LD_PARAMS = -m elf_i386
 
