@@ -8,7 +8,7 @@ objects = obj/loader.o \
 		  obj/kernel.o
 
 obj/%.o: src/%.cpp
-	g++ $(GPP_PARAMS) -o $@ -c $<
+	i686-elf-g++ $(GPP_PARAMS) -o $@ -c $<
 obj/%.o: src/%.s
 	as $(AS_PARAMS) -o $@  $<
 

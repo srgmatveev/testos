@@ -17,7 +17,7 @@ SECTIONS
     		*(.rodata)
     	}
 
-    .data :
+    .data BLOCK(4K) : ALIGN(4K)
     {
         start_ctors = .;
         KEEP(*( .init_array ));
