@@ -6,6 +6,6 @@ void printf(const char *str) {
 }
 
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magic_number) {
-    printf("Test string");
+    printf("Test string 32 bit starting...");
     while (1);
 }

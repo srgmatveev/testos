@@ -14,7 +14,7 @@ SECTIONS
 
     .data :
     {
-        statr_ctors = .;
+        start_ctors = .;
         KEEP(*( .init_array ));
         KEEP(*( SORT_BY_INIT_PRIORITY( .init_array )));
         end_ctors = .;
@@ -29,7 +29,7 @@ SECTIONS
 
     /DISCARD/ :
     {
-        *( .finit_array* )
+        *( .fini_array* )
         *( .comment )
     }
 }

@@ -1,17 +1,39 @@
-GPP_PARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leading-underscore
+OPTIMIZATION = 0
+GPP_PARAMS = -m32 -O$(OPTIMIZATION) -std=c++14 -fno-use-cxa-atexit -fno-builtin -fno-rtti -fno-leading-underscore -Wall -Wextra -pedantic-errors
 AS_PARAMS = --32
 LD_PARAMS = -m elf_i386
 
-objects = loader.o kernel.o
+objects = obj/loader.o \
+	      obj/constructors.o \
+		  obj/kernel.o
 
-%.o: %.cpp
+obj/%.o: src/%.cpp
 	g++ $(GPP_PARAMS) -o $@ -c $<
-%.o: %.s
+obj/%.o: src/%.s
 	as $(AS_PARAMS) -o $@  $<
 
-mykernel.bin: linker.ld $(objects)
+testos.bin: linker.ld $(objects)
 	ld $(LD_PARAMS) -T $< -o $@ $(objects)
 
-install: mykernel.bin
-	sudo cp $< /boot/mykernel.bin
+
+testos.iso: testos.bin
+	mkdir -p iso
+	mkdir -p iso/boot
+	mkdir -p iso/boot/grub
+	cp $< iso/boot/testos.bin
+	echo 'set timeout=0'                 > iso/boot/grub/grub.cfg
+	echo 'set default=0'                >> iso/boot/grub/grub.cfg
+	echo ''                             >> iso/boot/grub/grub.cfg
+	echo 'menuentry "TestOS" {'          >> iso/boot/grub/grub.cfg
+	echo '  multiboot /boot/testos.bin'  >> iso/boot/grub/grub.cfg
+	echo '  boot'                       >> iso/boot/grub/grub.cfg
+	echo '}'                            >> iso/boot/grub/grub.cfg
+	grub-mkrescue --output=$@ iso
+	rm -rf iso
+
+run: testos.iso
+	VirtualBoxVM --startvm Test_OS &
+
+install: testos.bin
+	sudo cp $< /boot/testos.bin
 

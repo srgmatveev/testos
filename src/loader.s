@@ -7,11 +7,13 @@
     .long CHECKSUM
 .section .text
 .extern kernelMain
+.extern initializeConstructors
     .global loader
 loader:
     mov $kernel_stack, %esp
-    push %eax
-    push %ebx
+    push %eax # magic number
+    push %ebx # multiboot structure ref
+    call initializeConstructors
     call kernelMain
 
 _stop:
