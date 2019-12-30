@@ -1,6 +1,17 @@
 #include "vga_colors.h"
 #include <stddef.h>
 #include <stdint.h>
+
+/* Check if the compiler thinks you are targeting the wrong operating system. */
+#if defined(__linux__)
+    #error "You are not using a cross-compiler, you will most certainly run into trouble"
+#endif
+
+#if !defined(__i386__)
+    #error "This OS needs to be compiled with a ix86-elf compiler"
+#endif
+
+
 volatile uint16_t *vga_buffer = (uint16_t *)0xB8000; /* memory location of the VGA textmode buffer */
 
 /* Columns and rows of the VGA buffer */
